@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Racing Game</title>
+
+<style>
+
+body{
+    margin:0;
+    overflow:hidden;
+    background:#222;
+    font-family:Arial;
+}
+
+#gameArea{
+    width:400px;
+    height:100vh;
+    background:#444;
+    margin:auto;
+    position:relative;
+    overflow:hidden;
+    border-left:5px solid white;
+    border-right:5px solid white;
+}
+
+.line{
+    width:10px;
+    height:100px;
+    background:white;
+    position:absolute;
+    left:195px;
+}
+
+.car{
+    width:50px;
+    height:90px;
+    background:red;
+    position:absolute;
+    bottom:20px;
+    left:175px;
+    border-radius:10px;
+}
+
+.enemy{
+    width:50px;
+    height:90px;
+    background:yellow;
+    position:absolute;
+    top:-120px;
+    left:150px;
+    border-radius:10px;
+}
+
+#score{
+    position:absolute;
+    top:10px;
+    left:10px;
+    color:white;
+    font-size:25px;
+    z-index:100;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="score">Score: 0</div>
+
+<div id="gameArea">
+
+    <div class="line" style="top:0px;"></div>
+    <div class="line" style="top:150px;"></div>
+    <div class="line" style="top:300px;"></div>
+    <div class="line" style="top:450px;"></div>
+
+    <div class="car" id="player"></div>
+
+    <div class="enemy" id="enemy"></div>
+
+</div>
+
+<script>
+
+const player = document.getElementById("player");
+const enemy = document.getElementById("enemy");
+const scoreText = document.getElementById("score");
+
+let playerX = 175;
+let score = 0;
+let gameOver = false;
+
+document.addEventListener("keydown", moveCar);
+
+function moveCar(e){
+
+    if(e.key === "ArrowLeft" && playerX > 0){
+        playerX -= 20;
+    }
+
+    if(e.key === "ArrowRight" && playerX < 350){
+        playerX += 20;
+    }
+
+    player.style.left = playerX + "px";
+}
+
+let enemyY = -100;
+let enemyX = Math.floor(Math.random() * 350);
+
+function gameLoop(){
+
+    if(gameOver) return;
+
+    enemyY += 5;
+
+    if(enemyY > window.innerHeight){
+        enemyY = -100;
+        enemyX = Math.floor(Math.random() * 350);
+
+        score++;
+        scoreText.innerHTML = "Score: " + score;
+    }
+
+    enemy.style.top = enemyY + "px";
+    enemy.style.left = enemyX + "px";
+
+    // Collision detection
+    let playerRect = player.getBoundingClientRect();
+    let enemyRect = enemy.getBoundingClientRect();
+
+    if(
+        playerRect.left < enemyRect.right &&
+        playerRect.right > enemyRect.left &&
+        playerRect.top < enemyRect.bottom &&
+        playerRect.bottom > enemyRect.top
+    ){
+        gameOver = true;
+        alert("Game Over! Score: " + score);
+        location.reload();
+    }
+
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+
+</script>
+
+</body>
+</html>
